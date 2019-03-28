@@ -29,8 +29,9 @@ func main() {
 	for {
 		c, err := l.Accept()
 		if err != nil {
-			panic(err)
+			fmt.Println("Error while accepting new connection!")
+			// panic(err)
 		}
-		go redis.HandleConnection(c)
+		go redis.HandleConnection(c, store)
 	}
 }

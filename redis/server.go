@@ -7,9 +7,7 @@ import (
 	"strings"
 )
 
-func HandleConnection(c net.Conn) {
-	var store map[string]string
-	store = make(map[string]string)
+func HandleConnection(c net.Conn, store map[string]string) {
 
 	fmt.Printf("Serving %s\n", c.RemoteAddr().String())
 	for {
