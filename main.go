@@ -4,11 +4,12 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"sync"
 
 	"github.com/maikhel/redis-go/redis"
 )
 
-var store map[string]string
+var store sync.Map
 
 func main() {
 	arguments := os.Args
@@ -24,14 +25,12 @@ func main() {
 	}
 	defer l.Close()
 
-	store = make(map[string]string)
-
 	for {
 		c, err := l.Accept()
 		if err != nil {
 			fmt.Println("Error while accepting new connection!")
 			// panic(err)
 		}
-		go redis.HandleConnection(c, store)
+		go redis.HandleConnection(c, &store)
 	}
 }

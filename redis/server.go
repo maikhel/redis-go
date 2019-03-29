@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"net"
 	"strings"
+	"sync"
 )
 
-func HandleConnection(c net.Conn, store map[string]string) {
+func HandleConnection(c net.Conn, store *sync.Map) {
 
 	fmt.Printf("Serving %s\n", c.RemoteAddr().String())
 	for {

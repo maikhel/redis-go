@@ -2,6 +2,7 @@ package redis
 
 import (
 	"strings"
+	"sync"
 )
 
 func ping(input string) string {
@@ -11,7 +12,7 @@ func ping(input string) string {
 	return "PONG"
 }
 
-func ExecCommand(input string, store map[string]string) string {
+func ExecCommand(input string, store *sync.Map) string {
 	args := strings.Split(input, " ")
 	cmd := args[0]
 
@@ -31,15 +32,18 @@ func ExecCommand(input string, store map[string]string) string {
 			if len(args) < 2 {
 				return "-ERR Too few arguments"
 			}
-			return store[args[1]]
+			result, ok := store.Load(args[1])
+			if ok {
+				return result.(string)
+			}
+			return "(nil)"
 		}
 	case "set":
 		{
 			if len(args) < 3 {
 				return "-ERR Too few arguments"
 			}
-			key, val := args[1], args[2]
-			store[key] = val
+			store.Store(args[1], args[2])
 			return "+OK"
 		}
 	default:
