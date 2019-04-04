@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"net"
-	"os"
 	"sync"
 
 	"github.com/maikhel/redis-go/redis"
@@ -12,25 +11,22 @@ import (
 var store sync.Map
 
 func main() {
-	arguments := os.Args
-	if len(arguments) == 1 {
-		fmt.Println("Please provide a port number!")
-		os.Exit(1)
-	}
+	PORT := ":" + "8001"
 
-	PORT := ":" + arguments[1]
-	l, err := net.Listen("tcp4", PORT)
+	listener, err := net.Listen("tcp", PORT)
 	if err != nil {
 		panic(err)
 	}
-	defer l.Close()
+	defer listener.Close()
 
 	for {
-		c, err := l.Accept()
+		connection, err := listener.Accept()
 		if err != nil {
 			fmt.Println("Error while accepting new connection!")
-			// panic(err)
+			panic(err)
 		}
-		go redis.HandleConnection(c, &store)
+
+		fmt.Println("New connection")
+		go redis.HandleConnection(connection, &store)
 	}
 }

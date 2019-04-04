@@ -3,30 +3,33 @@ package redis
 import (
 	"bufio"
 	"fmt"
-	"net"
+	"io"
+	"net/textproto"
 	"strings"
 	"sync"
 )
 
-func HandleConnection(c net.Conn, store *sync.Map) {
+func HandleConnection(c io.ReadWriteCloser, store *sync.Map) {
+	defer fmt.Println("Closing connection")
+	defer c.Close()
 
-	fmt.Printf("Serving %s\n", c.RemoteAddr().String())
+	buffer := bufio.NewReader(c)
+
 	for {
-		netData, err := bufio.NewReader(c).ReadString('\n')
-		if err != nil {
+		netData, err := textproto.NewReader(buffer).ReadLine()
+
+		if err == io.EOF {
+			break
+		} else if err != nil {
 			fmt.Println(err)
-			return
+			break
 		}
 
 		input := strings.TrimSpace(string(netData))
 		var result string
-		if input == "STOP" {
-			break
-		}
 
 		result = ExecCommand(input, store) + "\n"
 
 		c.Write([]byte(string(result)))
 	}
-	defer c.Close()
 }
