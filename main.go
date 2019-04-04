@@ -4,14 +4,26 @@ import (
 	"fmt"
 	"net"
 	"sync"
+
+	"github.com/kelseyhightower/envconfig"
 )
 
-func main() {
-	PORT := ":" + "8001"
+type specification struct {
+	Port            int    `envconfig:"PORT" default:"6379"`
+	DefaultPassword string `envconfig:"REDIS_AUTH_PASS" default:"bacon"`
+}
 
+var cfg specification
+
+func init() {
+	envconfig.MustProcess("", &cfg)
+}
+
+func main() {
 	var store sync.Map
 
-	listener, err := net.Listen("tcp", PORT)
+	port := fmt.Sprintf(":%d", cfg.Port)
+	listener, err := net.Listen("tcp", port)
 	if err != nil {
 		panic(err)
 	}
@@ -25,6 +37,6 @@ func main() {
 		}
 
 		fmt.Println("New connection")
-		go (&sessionHandler{conn, &store}).handle()
+		go (&sessionHandler{conn, &store, false}).handle()
 	}
 }
