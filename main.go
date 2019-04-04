@@ -4,14 +4,12 @@ import (
 	"fmt"
 	"net"
 	"sync"
-
-	"github.com/maikhel/redis-go/redis"
 )
-
-var store sync.Map
 
 func main() {
 	PORT := ":" + "8001"
+
+	var store sync.Map
 
 	listener, err := net.Listen("tcp", PORT)
 	if err != nil {
@@ -20,13 +18,13 @@ func main() {
 	defer listener.Close()
 
 	for {
-		connection, err := listener.Accept()
+		conn, err := listener.Accept()
 		if err != nil {
 			fmt.Println("Error while accepting new connection!")
 			panic(err)
 		}
 
 		fmt.Println("New connection")
-		go redis.HandleConnection(connection, &store)
+		go (&sessionHandler{conn, &store}).handle()
 	}
 }
