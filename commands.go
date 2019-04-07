@@ -9,7 +9,7 @@ func (s *sessionHandler) authenticate(args []string) string {
 		return "-ERR Wrong number of arguments"
 	}
 	if s.auth {
-		return "-ERR Already authenticated."
+		return "-ERR Already authenticated"
 	}
 
 	if args[0] == cfg.DefaultPassword {
