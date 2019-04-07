@@ -1,3 +1,6 @@
+build: install-dependencies
+	go build -o redis-go
+
 install-dependencies:
 	dep ensure
 
