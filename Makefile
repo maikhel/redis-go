@@ -10,3 +10,6 @@ run: install-dependencies
 
 test: install-dependencies
 	go test
+
+test-with-report: install-dependencies
+	go test -coverprofile=coverage.txt -covermode=atomic

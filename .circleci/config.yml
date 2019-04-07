@@ -1,4 +1,6 @@
 version: 2.1
+orbs:
+  codecov: codecov/codecov@1.0.4
 commands:
   install_dep:
     description: "Install dep package manager"
@@ -27,7 +29,7 @@ jobs:
 
       - run:
           name: Run unit tests
-          command: make test
+          command: make test-with-report
 
   build:
     docker:
