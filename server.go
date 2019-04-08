@@ -58,7 +58,7 @@ func (s *sessionHandler) ExecCommand(input string) string {
 	case "set":
 		return s.set(args[1:])
 	default:
-		return "COMMAND NOT FOUND"
+		return "-ERR Command not found"
 	}
 
 }

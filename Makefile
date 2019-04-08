@@ -13,3 +13,6 @@ test: install-dependencies
 
 test-with-report: install-dependencies
 	go test -coverprofile=coverage.txt -covermode=atomic
+
+test-html-report: test-with-report
+	go tool cover -html=coverage.txt
