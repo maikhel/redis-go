@@ -8,7 +8,6 @@ import (
 )
 
 func TestMain(t *testing.T) {
-	cfg.Port = 3001
 
 	quit := make(chan struct{})
 

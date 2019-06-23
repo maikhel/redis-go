@@ -1,4 +1,4 @@
-package main
+package lib
 
 import (
 	"bufio"
@@ -9,13 +9,26 @@ import (
 	"sync"
 )
 
-type sessionHandler struct {
-	conn  io.ReadWriteCloser
-	store *sync.Map
-	auth  bool
+// SessionHandler is responsible for one client connection.
+type SessionHandler struct {
+	conn            io.ReadWriteCloser
+	store           *sync.Map
+	auth            bool
+	defaultPassword string
 }
 
-func (s *sessionHandler) handle() {
+// NewSessionHandler builds a fully usable SessionHandler.
+func NewSessionHandler(conn io.ReadWriteCloser, store *sync.Map, auth bool, defaultPassword string) *SessionHandler {
+	return &SessionHandler{
+		conn:            conn,
+		store:           store,
+		auth:            auth,
+		defaultPassword: defaultPassword,
+	}
+}
+
+// Handle takes care of existing connection
+func (s *SessionHandler) Handle() {
 	defer fmt.Println("Connection closed")
 	defer s.conn.Close()
 
@@ -40,7 +53,8 @@ func (s *sessionHandler) handle() {
 	}
 }
 
-func (s *sessionHandler) ExecCommand(input string) string {
+// ExecCommand executes redis commands
+func (s *SessionHandler) ExecCommand(input string) string {
 	args := strings.Split(input, " ")
 	cmd := strings.ToLower(args[0])
 

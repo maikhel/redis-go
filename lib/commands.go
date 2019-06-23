@@ -1,10 +1,10 @@
-package main
+package lib
 
 import (
 	"strings"
 )
 
-func (s *sessionHandler) authenticate(args []string) string {
+func (s *SessionHandler) authenticate(args []string) string {
 	if len(args) != 1 {
 		return "-ERR Wrong number of arguments"
 	}
@@ -12,14 +12,14 @@ func (s *sessionHandler) authenticate(args []string) string {
 		return "-ERR Already authenticated"
 	}
 
-	if args[0] == cfg.DefaultPassword {
+	if args[0] == s.defaultPassword {
 		s.auth = true
 		return "+OK"
 	}
 	return "-ERR Invalid password"
 }
 
-func (s *sessionHandler) ping(args []string) string {
+func (s *SessionHandler) ping(args []string) string {
 	response := "PONG"
 	if len(args) > 0 {
 		response = strings.Join(args, " ")
@@ -28,7 +28,7 @@ func (s *sessionHandler) ping(args []string) string {
 	return response
 }
 
-func (s *sessionHandler) get(args []string) string {
+func (s *SessionHandler) get(args []string) string {
 	if len(args) != 1 {
 		return "-ERR Wrong number of arguments"
 	}
@@ -39,7 +39,7 @@ func (s *sessionHandler) get(args []string) string {
 	return "(nil)"
 }
 
-func (s *sessionHandler) set(args []string) string {
+func (s *SessionHandler) set(args []string) string {
 	if len(args) != 2 {
 		return "-ERR Wrong number of arguments"
 	}

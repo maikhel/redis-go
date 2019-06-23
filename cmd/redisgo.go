@@ -6,6 +6,7 @@ import (
 	"sync"
 
 	"github.com/kelseyhightower/envconfig"
+	"github.com/maikhel/redis-go/lib"
 )
 
 type specification struct {
@@ -13,13 +14,10 @@ type specification struct {
 	DefaultPassword string `envconfig:"REDIS_AUTH_PASS" default:"bacon"`
 }
 
-var cfg specification
-
-func init() {
-	envconfig.MustProcess("", &cfg)
-}
-
 func main() {
+	var cfg specification
+	envconfig.MustProcess("", &cfg)
+
 	var store sync.Map
 
 	port := fmt.Sprintf(":%d", cfg.Port)
@@ -37,6 +35,6 @@ func main() {
 		}
 
 		fmt.Println("New connection")
-		go (&sessionHandler{conn, &store, false}).handle()
+		go lib.NewSessionHandler(conn, &store, false, cfg.DefaultPassword).Handle()
 	}
 }

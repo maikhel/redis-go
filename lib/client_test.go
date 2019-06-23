@@ -1,4 +1,4 @@
-package main
+package lib
 
 import (
 	"sync"
@@ -10,13 +10,12 @@ import (
 func TestExecCommand(t *testing.T) {
 	var store sync.Map
 	testConn := new(MockedReadWriteCloser)
-	testHandler := sessionHandler{testConn, &store, false}
+	testHandler := NewSessionHandler(testConn, &store, false, "bacon")
 
 	args := "set hello world"
 	assert.Equal(t, testHandler.ExecCommand(args), "-NOAUTH Authentication required.", "should return error unless user authenticated")
 
-	cfg.DefaultPassword = "pass"
-	args = "auth pass"
+	args = "auth bacon"
 	assert.Equal(t, testHandler.ExecCommand(args), "+OK", "should authenticate")
 
 	args = "ping hello"
