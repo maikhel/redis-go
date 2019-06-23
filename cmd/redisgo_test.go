@@ -3,6 +3,7 @@ package main
 import (
 	"net"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -21,6 +22,8 @@ func TestMain(t *testing.T) {
 			}
 		}
 	}()
+
+	time.Sleep(3 * time.Second)
 
 	conn, err := net.Dial("tcp", "localhost:3001")
 	assert.Nil(t, err)

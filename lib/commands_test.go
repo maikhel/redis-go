@@ -5,6 +5,7 @@ import (
 	"sync"
 	"testing"
 
+	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -19,7 +20,9 @@ func (b MockedReadWriteCloser) Close() error {
 func TestAuthenticateCommand(t *testing.T) {
 	var store sync.Map
 	testConn := new(MockedReadWriteCloser)
-	testHandler := NewSessionHandler(testConn, &store, false, "bacon")
+	log := logrus.New()
+	logger := log.WithField("test", true)
+	testHandler := NewSessionHandler(testConn, logger, &store, false, "bacon")
 
 	args := []string{"one", "two"}
 	assert.Equal(t, testHandler.authenticate(args), "-ERR Wrong number of arguments", "should return error if too many arguments")
@@ -32,19 +35,21 @@ func TestAuthenticateCommand(t *testing.T) {
 	assert.Equal(t, testHandler.authenticate(args), "-ERR Already authenticated", "should return error if already authenticated")
 
 	args = []string{"pass"}
-	testHandler = NewSessionHandler(testConn, &store, false, "bacon")
+	testHandler = NewSessionHandler(testConn, logger, &store, false, "bacon")
 	assert.Equal(t, testHandler.authenticate(args), "-ERR Invalid password", "should return error if wrong password")
 
 	args = []string{"bacon"}
-	testHandler = NewSessionHandler(testConn, &store, false, "bacon")
+	testHandler = NewSessionHandler(testConn, logger, &store, false, "bacon")
 	assert.Equal(t, testHandler.authenticate(args), "+OK", "should authenticate if valid password")
 	assert.Equal(t, testHandler.auth, true)
 }
 
 func TestPingCommand(t *testing.T) {
 	var store sync.Map
+	log := logrus.New()
+	logger := log.WithField("test", true)
 	testConn := new(MockedReadWriteCloser)
-	testHandler := NewSessionHandler(testConn, &store, false, "bacon")
+	testHandler := NewSessionHandler(testConn, logger, &store, false, "bacon")
 
 	args := []string{}
 	assert.Equal(t, testHandler.ping(args), "PONG", "should return PONG if no arguments")
@@ -58,8 +63,10 @@ func TestPingCommand(t *testing.T) {
 
 func TestGetCommand(t *testing.T) {
 	var store sync.Map
+	log := logrus.New()
+	logger := log.WithField("test", true)
 	testConn := new(MockedReadWriteCloser)
-	testHandler := NewSessionHandler(testConn, &store, false, "bacon")
+	testHandler := NewSessionHandler(testConn, logger, &store, false, "bacon")
 
 	args := []string{"one", "two"}
 	assert.Equal(t, testHandler.get(args), "-ERR Wrong number of arguments", "should return error if too many arguments")
@@ -77,8 +84,10 @@ func TestGetCommand(t *testing.T) {
 
 func TestSetCommand(t *testing.T) {
 	var store sync.Map
+	log := logrus.New()
+	logger := log.WithField("test", true)
 	testConn := new(MockedReadWriteCloser)
-	testHandler := NewSessionHandler(testConn, &store, false, "bacon")
+	testHandler := NewSessionHandler(testConn, logger, &store, false, "bacon")
 
 	args := []string{"one", "two", "three"}
 	assert.Equal(t, testHandler.set(args), "-ERR Wrong number of arguments", "should return error if too many arguments")

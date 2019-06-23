@@ -5,8 +5,7 @@ install-dependencies:
 	dep ensure
 
 run: install-dependencies
-	export PORT=8001 REDIS_AUTH_PASS=pass
-	cd cmd && go build -o redis-go && ./redis-go
+	export PORT=8001 REDIS_AUTH_PASS=pass && cd cmd && go build -o redisgo && ./redisgo
 
 test: install-dependencies
 	export PORT=3001 && go test ./...

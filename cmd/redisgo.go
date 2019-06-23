@@ -7,6 +7,7 @@ import (
 
 	"github.com/kelseyhightower/envconfig"
 	"github.com/maikhel/redis-go/lib"
+	"github.com/sirupsen/logrus"
 )
 
 type specification struct {
@@ -18,23 +19,27 @@ func main() {
 	var cfg specification
 	envconfig.MustProcess("", &cfg)
 
+	log := logrus.New()
+
 	var store sync.Map
 
 	port := fmt.Sprintf(":%d", cfg.Port)
+	log.Infof("About to start serving on port %s", port)
+
 	listener, err := net.Listen("tcp", port)
 	if err != nil {
-		panic(err)
+		log.Fatalf("Could not set up listener: %v", err)
 	}
 	defer listener.Close()
 
 	for {
 		conn, err := listener.Accept()
 		if err != nil {
-			fmt.Println("Error while accepting new connection!")
-			panic(err)
+			log.Fatalf("Could not accept connection: %v", err)
 		}
 
-		fmt.Println("New connection")
-		go lib.NewSessionHandler(conn, &store, false, cfg.DefaultPassword).Handle()
+		logger := log.WithField("remote", conn.RemoteAddr())
+		logger.Infoln("Accepted connection")
+		go lib.NewSessionHandler(conn, logger, &store, false, cfg.DefaultPassword).Handle()
 	}
 }

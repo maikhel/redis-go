@@ -4,13 +4,16 @@ import (
 	"sync"
 	"testing"
 
+	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestExecCommand(t *testing.T) {
 	var store sync.Map
+	log := logrus.New()
+	logger := log.WithField("test", true)
 	testConn := new(MockedReadWriteCloser)
-	testHandler := NewSessionHandler(testConn, &store, false, "bacon")
+	testHandler := NewSessionHandler(testConn, logger, &store, false, "bacon")
 
 	args := "set hello world"
 	assert.Equal(t, testHandler.ExecCommand(args), "-NOAUTH Authentication required.", "should return error unless user authenticated")
